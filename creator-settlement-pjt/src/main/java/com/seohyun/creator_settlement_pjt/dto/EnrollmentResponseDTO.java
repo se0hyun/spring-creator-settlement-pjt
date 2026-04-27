@@ -11,7 +11,7 @@ public class EnrollmentResponseDTO {
     private Long id;
     private String courseTitle;
     private String studentName;
-    private int paidAmount;
+    private long paidAmount;
     private LocalDateTime paidAt;
 
 }

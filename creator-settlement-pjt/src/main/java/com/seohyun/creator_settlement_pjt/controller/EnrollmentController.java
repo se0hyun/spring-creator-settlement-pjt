@@ -29,7 +29,7 @@ public class EnrollmentController {
     @Operation(summary = "강의 수강", description = "학생이 강의를 구매합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "수강 성공"),
-            @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 (역할 불일치, 중복 수강, 수수료율 없음 등)")
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 (역할 불일치, 결제 금액 불일치, 중복 수강, 수수료율 없음 등)")
     })
     public ResponseEntity<EnrollmentResponseDTO> enroll(@Valid @RequestBody EnrollmentRequestDTO enrollmentRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
