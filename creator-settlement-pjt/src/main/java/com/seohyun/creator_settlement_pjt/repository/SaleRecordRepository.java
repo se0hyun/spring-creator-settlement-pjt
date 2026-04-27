@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface SaleRecordRepository extends JpaRepository<SaleRecord, Long> {
     boolean existsByStudentAndCourse(User student, Course course);
-    List<SaleRecord> findByCourseCreatorAndPaidAtBetween(User creator, LocalDateTime startAt, LocalDateTime endAt); // paidAmount, salesCount
-
+    List<SaleRecord> findByCourseCreatorOrderByPaidAtDesc(User creator);
+    List<SaleRecord> findByCourseCreatorAndPaidAtBetweenOrderByPaidAtDesc(User creator, LocalDateTime startAt, LocalDateTime endAt);
+    List<SaleRecord> findByCourseCreatorAndPaidAtBetween(User creator, LocalDateTime startAt, LocalDateTime endAt);
 }
