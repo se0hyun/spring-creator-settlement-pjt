@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
-import com.seohyun.creator_settlement_pjt.entity.CancelRecord;
 import com.seohyun.creator_settlement_pjt.entity.Course;
 import com.seohyun.creator_settlement_pjt.entity.FeeRecord;
 import com.seohyun.creator_settlement_pjt.entity.Role;
@@ -24,175 +23,83 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        User creator1 = User.builder()
-                .name("홍길동")
-                .role(Role.CREATOR)
-                .build();
 
-        User creator2 = User.builder()
-                .name("김영희")
-                .role(Role.CREATOR)
-                .build();
-        
-        User creator3 = User.builder()
-                .name("이철수")
-                .role(Role.CREATOR)
-                .build();
+        // ── 크리에이터 (creator-1 ~ creator-3) ───────────────────────
+        User creator1 = User.builder().name("김강사").role(Role.CREATOR).build();
+        User creator2 = User.builder().name("이강사").role(Role.CREATOR).build();
+        User creator3 = User.builder().name("박강사").role(Role.CREATOR).build();
 
-        User manager = User.builder()
-                .name("관리자")
-                .role(Role.MANAGER)
-                .build();
-        User student1 = User.builder()
-                .name("학생1")
-                .role(Role.STUDENT)
-                .build();
-        User student2 = User.builder()
-                .name("학생2")
-                .role(Role.STUDENT)
-                .build();
-        User student3 = User.builder()
-                .name("학생3")
-                .role(Role.STUDENT)
-                .build();
-        User student4 = User.builder()
-                .name("학생4")
-                .role(Role.STUDENT)
-                .build();
-                User student5 = User.builder()
-                .name("학생5")
-                .role(Role.STUDENT)
-                .build();
-        User student6 = User.builder()
-                .name("학생6")
-                .role(Role.STUDENT)
-                .build();
+        // ── 관리자 ────────────────────────────────────────────────────
+        User manager = User.builder().name("관리자").role(Role.MANAGER).build();
 
-        em.persist(creator1);
-        em.persist(creator2);
-        em.persist(creator3);
+        // ── 수강생 (student-1 ~ student-7) ───────────────────────────
+        User student1 = User.builder().name("student-1").role(Role.STUDENT).build();
+        User student2 = User.builder().name("student-2").role(Role.STUDENT).build();
+        User student3 = User.builder().name("student-3").role(Role.STUDENT).build();
+        User student4 = User.builder().name("student-4").role(Role.STUDENT).build();
+        User student5 = User.builder().name("student-5").role(Role.STUDENT).build();
+        User student6 = User.builder().name("student-6").role(Role.STUDENT).build();
+        User student7 = User.builder().name("student-7").role(Role.STUDENT).build();
+
+        em.persist(creator1); em.persist(creator2); em.persist(creator3);
         em.persist(manager);
-        em.persist(student1);
-        em.persist(student2);
-        em.persist(student3);
-        em.persist(student4);
-        em.persist(student5);
-        em.persist(student6);
-        
-        Course course1 = Course.builder()
-                .title("Spring Boot 입문")
-                .price(50000)
-                .creator(creator1)
-                .build();
+        em.persist(student1); em.persist(student2); em.persist(student3);
+        em.persist(student4); em.persist(student5); em.persist(student6);
+        em.persist(student7);
 
-        Course course2 = Course.builder()
-                .title("JPA 실전")
-                .price(70000)
-                .creator(creator1)
-                .build();
+        // ── 강의 (course-1 ~ course-4) ───────────────────────────────
+        Course course1 = Course.builder().title("Spring Boot 입문").price(50000).creator(creator1).build();
+        Course course2 = Course.builder().title("JPA 실전").price(80000).creator(creator1).build();
+        Course course3 = Course.builder().title("Kotlin 기초").price(60000).creator(creator2).build();
+        Course course4 = Course.builder().title("MSA 설계").price(120000).creator(creator3).build();
 
-        Course course3 = Course.builder()
-                .title("React 기초")
-                .price(45000)
-                .creator(creator2)
-                .build();
+        em.persist(course1); em.persist(course2);
+        em.persist(course3); em.persist(course4);
 
-        Course course4 = Course.builder()
-                .title("C# 기초")
-                .price(20000)
-                .creator(creator3)
-                .build();
-
-        em.persist(course1);
-        em.persist(course2);
-        em.persist(course3);
-        em.persist(course4);
-        
-        FeeRecord feeRecord1 = FeeRecord.builder()
-                .feeRate(BigDecimal.valueOf(20.0))
-                .startAt(LocalDateTime.of(2026, 1, 1, 0, 0, 0))
+        // ── 수수료율: 2025 ~ 2026 커버 ───────────────────────────────
+        FeeRecord feeRecord = FeeRecord.builder()
+                .feeRate(BigDecimal.valueOf(20.00))
+                .startAt(LocalDateTime.of(2025, 1, 1, 0, 0, 0))
                 .endAt(LocalDateTime.of(2026, 12, 31, 23, 59, 59))
                 .build();
+        em.persist(feeRecord);
 
-        em.persist(feeRecord1);
+        BigDecimal feeRate = BigDecimal.valueOf(20.00);
 
-        BigDecimal feeRate = BigDecimal.valueOf(20.0);
-
-        // ── 2026년 2월 구매 내역 ──────────────────────────────────────
-        SaleRecord sale1 = SaleRecord.builder()
+        // ── 판매 내역 (가이드라인 7개 케이스) ────────────────────────
+        // 케이스 1 — 정상 판매 (취소 없음)
+        em.persist(SaleRecord.builder()
                 .course(course1).student(student1).paidAmount(50000)
-                .paidAt(LocalDateTime.of(2026, 2, 5, 10, 0)).feeRate(feeRate).build();
-        SaleRecord sale2 = SaleRecord.builder()
+                .paidAt(LocalDateTime.of(2025, 3, 5, 10, 0, 0)).feeRate(feeRate).build());
+
+        // 케이스 2 — 정상 판매 (취소 없음)
+        em.persist(SaleRecord.builder()
                 .course(course1).student(student2).paidAmount(50000)
-                .paidAt(LocalDateTime.of(2026, 2, 10, 14, 0)).feeRate(feeRate).build();
-        SaleRecord sale3 = SaleRecord.builder()
-                .course(course1).student(student3).paidAmount(50000)
-                .paidAt(LocalDateTime.of(2026, 2, 15, 9, 0)).feeRate(feeRate).build();
-        SaleRecord sale4 = SaleRecord.builder()
-                .course(course2).student(student4).paidAmount(70000)
-                .paidAt(LocalDateTime.of(2026, 2, 20, 11, 0)).feeRate(feeRate).build();
-        SaleRecord sale5 = SaleRecord.builder()
-                .course(course3).student(student5).paidAmount(45000)
-                .paidAt(LocalDateTime.of(2026, 2, 8, 15, 0)).feeRate(feeRate).build();
-        SaleRecord sale6 = SaleRecord.builder()
-                .course(course3).student(student1).paidAmount(45000)
-                .paidAt(LocalDateTime.of(2026, 2, 12, 16, 0)).feeRate(feeRate).build();
-        SaleRecord sale7 = SaleRecord.builder()
-                .course(course4).student(student6).paidAmount(20000)
-                .paidAt(LocalDateTime.of(2026, 2, 18, 13, 0)).feeRate(feeRate).build();
+                .paidAt(LocalDateTime.of(2025, 3, 15, 14, 30, 0)).feeRate(feeRate).build());
 
-        em.persist(sale1); em.persist(sale2); em.persist(sale3);
-        em.persist(sale4); em.persist(sale5); em.persist(sale6); em.persist(sale7);
+        // 케이스 3 — 전액 환불 대상 판매
+        em.persist(SaleRecord.builder()
+                .course(course2).student(student3).paidAmount(80000)
+                .paidAt(LocalDateTime.of(2025, 3, 20, 9, 0, 0)).feeRate(feeRate).build());
 
-        // 2월 취소: student3의 course1 환불
-        CancelRecord cancel1 = CancelRecord.builder()
-                .saleRecord(sale3).cancelAmount(50000)
-                .canceledAt(LocalDateTime.of(2026, 2, 20, 10, 0)).build();
-        em.persist(cancel1);
+        // 케이스 4 — 부분 환불 대상 판매 (환불 금액 ≠ 원결제 금액)
+        em.persist(SaleRecord.builder()
+                .course(course2).student(student4).paidAmount(80000)
+                .paidAt(LocalDateTime.of(2025, 3, 22, 11, 0, 0)).feeRate(feeRate).build());
 
-        // ── 2026년 3월 구매 내역 ──────────────────────────────────────
-        SaleRecord sale8 = SaleRecord.builder()
-                .course(course1).student(student5).paidAmount(50000)
-                .paidAt(LocalDateTime.of(2026, 3, 5, 10, 0)).feeRate(feeRate).build();
-        SaleRecord sale9 = SaleRecord.builder()
-                .course(course1).student(student6).paidAmount(50000)
-                .paidAt(LocalDateTime.of(2026, 3, 10, 12, 0)).feeRate(feeRate).build();
-        SaleRecord sale10 = SaleRecord.builder()
-                .course(course2).student(student1).paidAmount(70000)
-                .paidAt(LocalDateTime.of(2026, 3, 22, 9, 0)).feeRate(feeRate).build();
-        SaleRecord sale11 = SaleRecord.builder()
-                .course(course3).student(student2).paidAmount(45000)
-                .paidAt(LocalDateTime.of(2026, 3, 15, 17, 0)).feeRate(feeRate).build();
-        SaleRecord sale12 = SaleRecord.builder()
-                .course(course4).student(student3).paidAmount(20000)
-                .paidAt(LocalDateTime.of(2026, 3, 8, 11, 0)).feeRate(feeRate).build();
+        // 케이스 5 — 월 경계: 1월 말 결제 → 2월 초 취소 예정
+        em.persist(SaleRecord.builder()
+                .course(course3).student(student5).paidAmount(60000)
+                .paidAt(LocalDateTime.of(2025, 1, 31, 23, 30, 0)).feeRate(feeRate).build());
 
-        em.persist(sale8); em.persist(sale9); em.persist(sale10);
-        em.persist(sale11); em.persist(sale12);
+        // 케이스 6 — creator-2 정상 판매 (취소 없음)
+        em.persist(SaleRecord.builder()
+                .course(course3).student(student6).paidAmount(60000)
+                .paidAt(LocalDateTime.of(2025, 3, 10, 16, 0, 0)).feeRate(feeRate).build());
 
-        // 3월 취소: student6의 course1 환불
-        CancelRecord cancel2 = CancelRecord.builder()
-                .saleRecord(sale9).cancelAmount(50000)
-                .canceledAt(LocalDateTime.of(2026, 3, 18, 14, 0)).build();
-        em.persist(cancel2);
-
-        // ── 2026년 4월 구매 내역 ──────────────────────────────────────
-        SaleRecord sale13 = SaleRecord.builder()
-                .course(course1).student(student4).paidAmount(50000)
-                .paidAt(LocalDateTime.of(2026, 4, 5, 10, 0)).feeRate(feeRate).build();
-        SaleRecord sale14 = SaleRecord.builder()
-                .course(course2).student(student2).paidAmount(70000)
-                .paidAt(LocalDateTime.of(2026, 4, 15, 13, 0)).feeRate(feeRate).build();
-        SaleRecord sale15 = SaleRecord.builder()
-                .course(course3).student(student6).paidAmount(45000)
-                .paidAt(LocalDateTime.of(2026, 4, 10, 16, 0)).feeRate(feeRate).build();
-
-        em.persist(sale13); em.persist(sale14); em.persist(sale15);
-
-        // 4월 취소: student2의 course2 환불
-        CancelRecord cancel3 = CancelRecord.builder()
-                .saleRecord(sale14).cancelAmount(70000)
-                .canceledAt(LocalDateTime.of(2026, 4, 20, 11, 0)).build();
-        em.persist(cancel3);
+        // 케이스 7 — creator-3 판매 (2월, 빈 월 조회 검증용)
+        em.persist(SaleRecord.builder()
+                .course(course4).student(student7).paidAmount(120000)
+                .paidAt(LocalDateTime.of(2025, 2, 14, 10, 0, 0)).feeRate(feeRate).build());
     }
 }
