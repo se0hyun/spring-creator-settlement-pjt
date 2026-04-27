@@ -12,8 +12,8 @@ public class CancelResponseDTO {
     private Long saleRecordId;
     private String courseTitle;
     private String studentName;
-    private int paidAmount;
-    private int cancelAmount;
+    private long paidAmount;
+    private long cancelAmount;
     private LocalDateTime canceledAt;
 
 }

@@ -46,6 +46,10 @@ public class EnrollmentService {
             throw new BusinessException(ErrorCode.INVALID_ROLE);
         }
 
+        if (enrollmentRequestDTO.getPaidAmount() != course.getPrice()) {
+            throw new BusinessException(ErrorCode.INVALID_PAYMENT_AMOUNT);
+        }
+
         if (saleRecordRepository.existsByStudentAndCourse(student, course)) {
             throw new BusinessException(ErrorCode.ALREADY_ENROLLED);
         }
@@ -56,7 +60,7 @@ public class EnrollmentService {
         SaleRecord saleRecord = saleRecordRepository.save(SaleRecord.builder()
                 .course(course)
                 .student(student)
-                .paidAmount(course.getPrice())
+                .paidAmount(enrollmentRequestDTO.getPaidAmount())   // 샘플 데이터에 따른 변경
                 .paidAt(enrollmentRequestDTO.getPaidAt())
                 .feeRate(feeRecord.getFeeRate())
                 .build());
@@ -65,7 +69,7 @@ public class EnrollmentService {
                 .id(saleRecord.getId())
                 .courseTitle(course.getTitle())
                 .studentName(student.getName())
-                .paidAmount((int) saleRecord.getPaidAmount())
+                .paidAmount(saleRecord.getPaidAmount())     // 샘플 데이터에 따른 변경
                 .paidAt(saleRecord.getPaidAt())
                 .build();
     }
@@ -94,8 +98,8 @@ public class EnrollmentService {
                 .saleRecordId(saleRecord.getId())
                 .courseTitle(saleRecord.getCourse().getTitle())
                 .studentName(saleRecord.getStudent().getName())
-                .paidAmount((int) saleRecord.getPaidAmount())
-                .cancelAmount((int) cancelRecord.getCancelAmount())
+                .paidAmount(saleRecord.getPaidAmount())     // 샘플 데이터에 따른 변경  
+                .cancelAmount(cancelRecord.getCancelAmount())     // 샘플 데이터에 따른 변경
                 .canceledAt(cancelRecord.getCanceledAt())
                 .build();
     }
