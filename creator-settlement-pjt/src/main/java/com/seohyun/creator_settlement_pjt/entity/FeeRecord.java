@@ -9,7 +9,6 @@ import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,8 +17,6 @@ import java.time.LocalDateTime;
 @Table(name = "fee_records")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)   // JPA용
-@AllArgsConstructor(access = AccessLevel.PRIVATE)    // Builder 전용, 직접 호출 차단
-@Builder
 public class FeeRecord {
 
     @Id
@@ -35,5 +32,10 @@ public class FeeRecord {
     @Column(name="end_at", nullable = false)
     private LocalDateTime endAt;
 
-
+    @Builder
+    private FeeRecord(BigDecimal feeRate, LocalDateTime startAt, LocalDateTime endAt) {
+        this.feeRate = feeRate;
+        this.startAt = startAt;
+        this.endAt = endAt;
+    }
 }

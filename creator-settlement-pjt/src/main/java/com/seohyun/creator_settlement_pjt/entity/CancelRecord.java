@@ -20,8 +20,6 @@ import java.time.LocalDateTime;
 @Table(name = "cancel_records")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)   // JPA용
-@AllArgsConstructor(access = AccessLevel.PRIVATE)    // Builder 전용, 직접 호출 차단
-@Builder
 public class CancelRecord {
 
     @Id
@@ -33,9 +31,15 @@ public class CancelRecord {
     private SaleRecord saleRecord;
 
     @Column(name="cancel_amount", nullable = false)
-    private int cancelAmount;
+    private long cancelAmount;
 
     @Column(name="canceled_at", nullable = false)
     private LocalDateTime canceledAt;
 
+    @Builder
+    private CancelRecord(SaleRecord saleRecord, long cancelAmount, LocalDateTime canceledAt) {
+        this.saleRecord = saleRecord;
+        this.cancelAmount = cancelAmount;
+        this.canceledAt = canceledAt;
+    }
 }
