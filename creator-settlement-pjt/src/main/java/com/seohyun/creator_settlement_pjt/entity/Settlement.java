@@ -16,12 +16,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
 import lombok.Builder;
+import com.seohyun.creator_settlement_pjt.exception.BusinessException;
+import com.seohyun.creator_settlement_pjt.exception.ErrorCode;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "settlements",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "year", "month"}))
+       uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "settlement_year", "settlement_month"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Settlement {
 
@@ -33,26 +35,26 @@ public class Settlement {
     @JoinColumn(name = "user_id", nullable = false)
     private User creator;
 
-    @Column(nullable = false)
+    @Column(name = "settlement_year", nullable = false)
     private int year;
 
-    @Column(nullable = false)
+    @Column(name = "settlement_month", nullable = false)
     private int month;
 
     @Column(nullable = false)
-    private int totalSales;
+    private long totalSales;
 
     @Column(nullable = false)
-    private int totalRefunds;
+    private long totalRefunds;
 
     @Column(nullable = false)
-    private int netSales;
+    private long netSales;
 
     @Column(nullable = false)
-    private int feeAmount;
+    private long feeAmount;
 
     @Column(nullable = false)
-    private int settlementAmount;
+    private long settlementAmount;
 
     @Column(nullable = false)
     private int salesCount;
@@ -74,9 +76,9 @@ public class Settlement {
     private LocalDateTime paidAt;
 
     @Builder
-    private Settlement(User creator, int year, int month,
-                        int totalSales, int totalRefunds, int netSales,
-                        int feeAmount, int settlementAmount,
+    private Settlement(User creator, int year, int month,   
+                        long totalSales, long totalRefunds, long netSales,
+                        long feeAmount, long settlementAmount,
                         int salesCount, int cancelCount) {
         this.creator = creator;
         this.year = year;
@@ -93,11 +95,17 @@ public class Settlement {
     }
 
     public void confirm() {
+        if (this.status != SettlementStatus.PENDING) {
+            throw new BusinessException(ErrorCode.INVALID_SETTLEMENT_STATUS);
+        }
         this.status = SettlementStatus.CONFIRMED;
         this.confirmedAt = LocalDateTime.now();
     }
 
     public void pay() {
+        if (this.status != SettlementStatus.CONFIRMED) {
+            throw new BusinessException(ErrorCode.INVALID_SETTLEMENT_STATUS);
+        }
         this.status = SettlementStatus.PAID;
         this.paidAt = LocalDateTime.now();
     }

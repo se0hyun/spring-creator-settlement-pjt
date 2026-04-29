@@ -12,15 +12,12 @@ import jakarta.persistence.JoinColumn;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @Entity
 @Table(name = "courses")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)   // JPA용
-@AllArgsConstructor(access = AccessLevel.PRIVATE)    // Builder 전용, 직접 호출 차단
-@Builder
 public class Course {
 
     @Id
@@ -36,4 +33,11 @@ public class Course {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User creator;
+
+    @Builder
+    private Course(String title, int price, User creator) {
+        this.title = title;
+        this.price = price;
+        this.creator = creator;
+    }
 }
