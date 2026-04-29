@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/enrollments")
-@Tag(name = "1. Enrollment", description = "(수강생) 수강 및 취소 API")
+@Tag(name = "Enrollment", description = "(수강생) 수강 및 취소 API")
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;

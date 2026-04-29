@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/settlements")
 @RequiredArgsConstructor
-@Tag(name = "2. Settlement", description = "(관리자, 크리에이터) 정산 API")
+@Tag(name = "Settlement", description = "(관리자, 크리에이터) 정산 API")
 public class SettlementController {
 
     private final SettlementService settlementService;
@@ -67,7 +67,7 @@ public class SettlementController {
         
     @GetMapping("/summary")
     @Operation(
-            summary = "기간별 정산 집계", 
+            summary = "기간별 정산 집계 (관리자)", 
             description = "시작일~종료일 기간의 크리에이터별 정산 금액을 집계합니다. 월별로 독립 계산 후 합산하며, 정산금액 내림차순으로 정렬됩니다.(관리자)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "집계 성공"),
