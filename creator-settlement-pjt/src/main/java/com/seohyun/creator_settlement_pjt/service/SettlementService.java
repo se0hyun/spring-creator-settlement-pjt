@@ -3,10 +3,8 @@ package com.seohyun.creator_settlement_pjt.service;
 import com.seohyun.creator_settlement_pjt.dto.SettlementResponseDTO;
 import com.seohyun.creator_settlement_pjt.dto.SettlementSummaryItemDTO;
 import com.seohyun.creator_settlement_pjt.dto.SettlementSummaryResponseDTO;
-import com.seohyun.creator_settlement_pjt.entity.CancelRecord;
 import com.seohyun.creator_settlement_pjt.entity.FeeRecord;
 import com.seohyun.creator_settlement_pjt.entity.Role;
-import com.seohyun.creator_settlement_pjt.entity.SaleRecord;
 import com.seohyun.creator_settlement_pjt.entity.Settlement;
 import com.seohyun.creator_settlement_pjt.entity.User;
 import com.seohyun.creator_settlement_pjt.exception.BusinessException;
@@ -74,16 +72,10 @@ public class SettlementService {
                 continue;
             }
 
-            List<SaleRecord> sales = saleRecordRepository
-                    .findByCourseCreatorAndPaidAtBetween(creator, start, end);
-            List<CancelRecord> cancels = cancelRecordRepository
-                    .findBySaleRecordCourseCreatorAndCanceledAtBetween(creator, start, end);
-
-            // 이번 달 거래가 없고 이월할 금액도 없으면 정산 레코드 불필요
-            // (이월 여부는 이전 달 조회 전까지 알 수 없으므로, 아래에서 판단)
-
-            long totalSales = sales.stream().mapToLong(SaleRecord::getPaidAmount).sum();
-            long totalRefunds = cancels.stream().mapToLong(CancelRecord::getCancelAmount).sum();
+            long totalSales = saleRecordRepository.sumPaidAmountByCreatorAndRange(creator, start, end);
+            long totalRefunds = cancelRecordRepository.sumCancelAmountByCreatorAndRange(creator, start, end);
+            int salesCount = saleRecordRepository.countByCreatorAndRange(creator, start, end);
+            int cancelCount = cancelRecordRepository.countCancelByCreatorAndRange(creator, start, end);
             long netSales = totalSales - totalRefunds;
 
             // 이전 달 정산에서 미정산 손실(carryOver)을 가져옴
@@ -97,9 +89,8 @@ public class SettlementService {
             long effectiveNet = netSales + prevCarryOver;
 
             // 거래도 없고 이전 달 이월도 없으면 정산 생략
-            if (sales.isEmpty() && cancels.isEmpty() && prevCarryOver == 0) {
-                continue;
-            }
+            
+            if (totalSales == 0 && totalRefunds == 0 && prevCarryOver == 0) continue;
 
             long feeAmount = 0;
             long settlementAmount = 0;
@@ -124,8 +115,8 @@ public class SettlementService {
                     .feeAmount(feeAmount)
                     .settlementAmount(settlementAmount)
                     .carryOverAmount(prevCarryOver)   // 이번 달에 적용된 이월액 (0 이하)
-                    .salesCount(sales.size())
-                    .cancelCount(cancels.size())
+                    .salesCount(salesCount)
+                    .cancelCount(cancelCount)
                     .build());
         }
     }
@@ -203,16 +194,11 @@ public class SettlementService {
             // 월 구간의 실제 시작/종료 (기간 경계 고려)
             LocalDateTime start = from.isAfter(ym.atDay(1)) ? from.atStartOfDay()
                     : ym.atDay(1).atStartOfDay();
-            LocalDateTime end = to.isBefore(ym.atEndOfMonth()) ? to.atTime(23, 59, 59)
-                    : ym.atEndOfMonth().atTime(23, 59, 59);
+            LocalDateTime end = to.isBefore(ym.atEndOfMonth()) ? to.atTime(LocalTime.MAX)
+                    : ym.atEndOfMonth().atTime(LocalTime.MAX);
 
-            List<SaleRecord> sales = saleRecordRepository
-                    .findByCourseCreatorAndPaidAtBetween(creator, start, end);
-            List<CancelRecord> cancels = cancelRecordRepository
-                    .findBySaleRecordCourseCreatorAndCanceledAtBetween(creator, start, end);
-
-            long monthSales = sales.stream().mapToLong(SaleRecord::getPaidAmount).sum();
-            long monthRefunds = cancels.stream().mapToLong(CancelRecord::getCancelAmount).sum();
+            long monthSales = saleRecordRepository.sumPaidAmountByCreatorAndRange(creator, start, end);
+            long monthRefunds = cancelRecordRepository.sumCancelAmountByCreatorAndRange(creator, start, end);
             long monthNet = monthSales - monthRefunds;
 
             // effectiveNet: 이번 달 순매출 + 이전 달에서 이월된 미정산 손실
@@ -239,8 +225,8 @@ public class SettlementService {
             totalRefunds += monthRefunds;
             totalFee += monthFee;
             totalSettlement += monthSettlement;
-            salesCount += sales.size();
-            cancelCount += cancels.size();
+            salesCount += saleRecordRepository.countByCreatorAndRange(creator, start, end);
+            cancelCount += cancelRecordRepository.countCancelByCreatorAndRange(creator, start, end);
         }
 
         long netSales = totalSales - totalRefunds;
