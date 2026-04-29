@@ -76,25 +76,41 @@ public class SettlementService {
             List<CancelRecord> cancels = cancelRecordRepository
                     .findBySaleRecordCourseCreatorAndCanceledAtBetween(creator, start, end);
 
-            if (sales.isEmpty() && cancels.isEmpty()) {
-                continue;
-            }
+            // 이번 달 거래가 없고 이월할 금액도 없으면 정산 레코드 불필요
+            // (이월 여부는 이전 달 조회 전까지 알 수 없으므로, 아래에서 판단)
 
             long totalSales = sales.stream().mapToLong(SaleRecord::getPaidAmount).sum();
             long totalRefunds = cancels.stream().mapToLong(CancelRecord::getCancelAmount).sum();
             long netSales = totalSales - totalRefunds;
+
+            // 이전 달 정산에서 미정산 손실(carryOver)을 가져옴
+            // effectiveNet = 이번 달 순매출 + 이전 달에서 이월된 미정산 손실(0 이하)
+            YearMonth prevMonth = yearMonth.minusMonths(1);
+            long prevCarryOver = settlementRepository
+                    .findByCreatorAndYearAndMonth(creator, prevMonth.getYear(), prevMonth.getMonthValue())
+                    .map(prev -> Math.min(0L, prev.getNetSales() + prev.getCarryOverAmount()))
+                    .orElse(0L);
+
+            long effectiveNet = netSales + prevCarryOver;
+
+            // 거래도 없고 이전 달 이월도 없으면 정산 생략
+            if (sales.isEmpty() && cancels.isEmpty() && prevCarryOver == 0) {
+                continue;
+            }
+
             long feeAmount = 0;
             long settlementAmount = 0;
-            if (netSales <= 0) {    // netSales < 0인 경우 feeAmount = 0, settlementAmount = 0 처리
-                continue;
-            } else{
-                feeAmount = BigDecimal.valueOf(netSales)
+            if (effectiveNet > 0) {
+                // effectiveNet 기준으로 수수료 계산 (버림 처리)
+                feeAmount = BigDecimal.valueOf(effectiveNet)
                     .multiply(feeRecord.getFeeRate())
                     .divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN)
                     .longValue();
-                settlementAmount = netSales - feeAmount;
-
+                settlementAmount = effectiveNet - feeAmount;
             }
+            // effectiveNet <= 0 이면 feeAmount=0, settlementAmount=0 유지
+            // 음수 effectiveNet은 다음 달에 prevCarryOver로 전달됨
+
             settlementRepository.save(Settlement.builder()
                     .creator(creator)
                     .year(year)
@@ -104,6 +120,7 @@ public class SettlementService {
                     .netSales(netSales)
                     .feeAmount(feeAmount)
                     .settlementAmount(settlementAmount)
+                    .carryOverAmount(prevCarryOver)   // 이번 달에 적용된 이월액 (0 이하)
                     .salesCount(sales.size())
                     .cancelCount(cancels.size())
                     .build());
@@ -167,8 +184,12 @@ public class SettlementService {
     private SettlementSummaryItemDTO calculateCreatorSummary(
             User creator, LocalDate from, LocalDate to, List<YearMonth> months) {
 
-        long totalSales = 0, totalRefunds = 0, totalFee = 0;
+        long totalSales = 0, totalRefunds = 0, totalFee = 0, totalSettlement = 0;
         int salesCount = 0, cancelCount = 0;
+
+        // 월 루프 간 미정산 손실을 연속으로 이월하기 위한 누적 변수
+        // effectiveNet이 음수였던 달은 그 값을 다음 달로 전달
+        long runningCarryOver = 0;
 
         for (YearMonth ym : months) {
             // 월 구간의 실제 시작/종료 (기간 경계 고려)
@@ -186,29 +207,36 @@ public class SettlementService {
             long monthRefunds = cancels.stream().mapToLong(CancelRecord::getCancelAmount).sum();
             long monthNet = monthSales - monthRefunds;
 
-            // netSales < 0인 경우 feeAmount = 0, settlementAmount = 0 처리
-            // TODO: 음수 netSales(환불 초과)는 다음 달 정산에서 차감하는 이월 로직 필요.
-            //       현재는 0으로 처리하여 해당 월 손실분이 반영되지 않음.
+            // effectiveNet: 이번 달 순매출 + 이전 달에서 이월된 미정산 손실
+            long effectiveNet = monthNet + runningCarryOver;
+
             long monthFee = 0;
-            if (monthNet > 0) {
+            long monthSettlement = 0;
+            if (effectiveNet > 0) {
+                // effectiveNet 기준으로 수수료 계산 (버림 처리)
                 FeeRecord feeRecord = feeRecordRepository
                         .findActiveFeeRate(ym.atDay(1).atStartOfDay())
                         .orElseThrow(() -> new BusinessException(ErrorCode.FEE_RATE_NOT_FOUND));
-                monthFee = BigDecimal.valueOf(monthNet)
+                monthFee = BigDecimal.valueOf(effectiveNet)
                         .multiply(feeRecord.getFeeRate())
                         .divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN)
                         .longValue();
+                monthSettlement = effectiveNet - monthFee;
+                runningCarryOver = 0;       // 손실 흡수 완료, 이월 리셋
+            } else {
+                runningCarryOver = effectiveNet;    // 음수 effectiveNet을 다음 달로 이월
             }
 
             totalSales += monthSales;
             totalRefunds += monthRefunds;
             totalFee += monthFee;
+            totalSettlement += monthSettlement;
             salesCount += sales.size();
             cancelCount += cancels.size();
         }
 
         long netSales = totalSales - totalRefunds;
-        long settlementAmount = Math.max(0, netSales - totalFee);
+        long settlementAmount = totalSettlement;
 
         return SettlementSummaryItemDTO.builder()
                 .creatorId(creator.getId())
