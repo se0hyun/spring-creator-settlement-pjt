@@ -1,4 +1,4 @@
-# spring-creator-settlement-pjt
+# 퓨쳐스콜레-라이브클래스 프로덕트 엔지니어 과제 - BE-B. 크리에이터 정산 API
 
 ## 프로젝트 개요
 
