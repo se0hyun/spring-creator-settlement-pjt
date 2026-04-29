@@ -28,7 +28,7 @@ public class EnrollmentController {
     private final EnrollmentService enrollmentService;
 
     @PostMapping
-    @Operation(summary = "1. 강의 수강", description = "학생이 강의를 구매합니다.")
+    @Operation(summary = "강의 수강", description = "학생이 강의를 구매합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "수강 성공"),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 (역할 불일치, 결제 금액 불일치, 중복 수강, 수수료율 없음 등)")
@@ -39,7 +39,7 @@ public class EnrollmentController {
     }
 
     @PostMapping("/{saleRecordId}/cancel")
-    @Operation(summary = "2. 수강 취소", description = "판매 내역을 취소하고 환불 처리합니다.")
+    @Operation(summary = "수강 취소", description = "판매 내역을 취소하고 환불 처리합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "취소 성공"),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 (중복 취소, 환불 금액 초과 등)")

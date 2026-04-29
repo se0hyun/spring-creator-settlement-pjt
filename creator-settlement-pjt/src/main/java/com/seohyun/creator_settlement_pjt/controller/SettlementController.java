@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/settlements")
@@ -30,7 +29,7 @@ public class SettlementController {
     private final SettlementService settlementService;
     
         @PostMapping("/generate")
-        @Operation(summary = "1. 정산 수동 생성 (관리자)", description = "특정 연월에 대해 모든 크리에이터의 정산을 생성합니다.")
+        @Operation(summary = "정산 수동 생성 (관리자)", description = "특정 연월에 대해 모든 크리에이터의 정산을 생성합니다.")
         @ApiResponses({
                 @ApiResponse(responseCode = "200", description = "정산 생성 성공"),
                 @ApiResponse(responseCode = "400", description = "잘못된 연월 값")
@@ -43,7 +42,7 @@ public class SettlementController {
         }
 
         @PostMapping("/{settlementId}/confirm")
-        @Operation(summary = "2. 정산 확정 (관리자)", description = "PENDING 상태의 정산을 CONFIRMED로 변경합니다.")
+        @Operation(summary = "정산 확정 (관리자)", description = "PENDING 상태의 정산을 CONFIRMED로 변경합니다.")
         @ApiResponses({
                 @ApiResponse(responseCode = "200", description = "정산 확정 성공"),
                 @ApiResponse(responseCode = "404", description = "정산을 찾을 수 없음"),
@@ -55,7 +54,7 @@ public class SettlementController {
         }
     
         @PostMapping("/{settlementId}/pay")
-        @Operation(summary = "3. 정산 지급 (관리자)", description = "CONFIRMED 상태의 정산을 PAID로 변경합니다.")
+        @Operation(summary = "정산 지급 (관리자)", description = "CONFIRMED 상태의 정산을 PAID로 변경합니다.")
         @ApiResponses({
                 @ApiResponse(responseCode = "200", description = "정산 지급 성공"),
                 @ApiResponse(responseCode = "404", description = "정산을 찾을 수 없음"),
@@ -68,7 +67,7 @@ public class SettlementController {
         
     @GetMapping("/summary")
     @Operation(
-            summary = "4. 기간별 정산 집계", 
+            summary = "기간별 정산 집계", 
             description = "시작일~종료일 기간의 크리에이터별 정산 금액을 집계합니다. 월별로 독립 계산 후 합산하며, 정산금액 내림차순으로 정렬됩니다.(관리자)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "집계 성공"),
@@ -83,7 +82,7 @@ public class SettlementController {
     }
 
     @GetMapping("/creators/{creatorId}/monthly")
-    @Operation(summary = "5. 크리에이터별 특정 월 정산 조회 (크리에이터)", description = "크리에이터 본인의 특정 월 정산 내역을 조회합니다.")
+    @Operation(summary = "크리에이터별 특정 월 정산 조회 (크리에이터)", description = "크리에이터 본인의 특정 월 정산 내역을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "크리에이터 또는 해당 월 정산을 찾을 수 없음")
