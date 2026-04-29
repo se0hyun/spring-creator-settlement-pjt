@@ -1,7 +1,7 @@
 package com.seohyun.creator_settlement_pjt.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
+@JsonPropertyOrder({"courseId", "studentId", "paidAmount", "paidAt"})
 public class EnrollmentRequestDTO {
 
     @NotNull
