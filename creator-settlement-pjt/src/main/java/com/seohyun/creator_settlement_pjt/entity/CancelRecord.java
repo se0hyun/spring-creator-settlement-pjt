@@ -12,8 +12,8 @@ import jakarta.persistence.JoinColumn;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,10 +36,15 @@ public class CancelRecord {
     @Column(name="canceled_at", nullable = false)
     private LocalDateTime canceledAt;
 
+    /** 취소 일시 기준 유효했던 플랫폼 수수료율(%) 스냅샷 — 정산 집계는 월별 FeeRecord를 쓰지만, 감사·표시용으로 저장 */
+    @Column(name = "fee_rate", nullable = false, precision = 5, scale = 2)
+    private BigDecimal feeRate;
+
     @Builder
-    private CancelRecord(SaleRecord saleRecord, long cancelAmount, LocalDateTime canceledAt) {
+    private CancelRecord(SaleRecord saleRecord, long cancelAmount, LocalDateTime canceledAt, BigDecimal feeRate) {
         this.saleRecord = saleRecord;
         this.cancelAmount = cancelAmount;
         this.canceledAt = canceledAt;
+        this.feeRate = feeRate;
     }
 }

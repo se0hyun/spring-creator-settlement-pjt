@@ -5,7 +5,7 @@
 
 ## Swagger UI 표시 정리
 
-- **태그 순서**: `SwaggerConfig`에서 `OpenAPI.tags()`로 Enrollment → SaleRecord → Settlement 순을 명시했습니다. (`application.properties`의 `springdoc.swagger-ui.tags-sorter` 등으로 탭 정렬 방식 조정 가능)
+- **태그 순서**: `SwaggerConfig`에서 `OpenAPI.tags()`로 Enrollment → FeeRate → SaleRecord → Settlement 순을 명시했습니다. (`application.properties`의 `springdoc.swagger-ui.tags-sorter` 등으로 탭 정렬 방식 조정 가능)
 - **스키마 필드 순서**: 주요 DTO에 `@JsonPropertyOrder`를 두어 Swagger의 예시 응답·스키마 탭에서 필드가 일정한 순서로 보이도록 했습니다.
 
 ## 판매 내역 조회 `GET /sale-records` — `from` / `to`
@@ -25,6 +25,13 @@
 |--------|-----|------|------|
 | POST | `/api/v1/enrollments` | 강의 수강 등록 | STUDENT |
 | POST | `/api/v1/enrollments/{saleRecordId}/cancel` | 수강 취소 및 환불 | STUDENT |
+
+### FeeRate (플랫폼 수수료 구간)
+
+| Method | URL | 설명 | 역할 |
+|--------|-----|------|------|
+| GET | `/api/v1/fee-rates/current` | 현재 시각 기준 유효 수수료 한 건 조회 | MANAGER |
+| POST | `/api/v1/fee-rates` | 새 구간 등록 (`feeRate`, `effectiveFrom`). 기존 구간 종료 자동 조정 | MANAGER |
 
 ### SaleRecord (판매 내역)
 
@@ -69,3 +76,5 @@ PENDING → CONFIRMED → PAID
 | `SETTLEMENT_NOT_FOUND` | 404 | 해당 월 정산 없음 |
 | `FEE_RATE_NOT_FOUND` | 404 | 유효한 수수료율 없음 |
 | `INVALID_DATE_RANGE` | 400 | 집계 시작일이 종료일보다 늦음 (`from > to`) |
+| `INVALID_FEE_EFFECTIVE_FROM` | 400 | 수수료 적용 시작 시각이 유효하지 않음 |
+| `FEE_RATE_SCHEDULE_CONFLICT` | 409 | 동일 적용 시작 시각의 수수료 구간이 이미 존재 |

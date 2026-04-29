@@ -20,7 +20,6 @@ import com.seohyun.creator_settlement_pjt.entity.SaleRecord;
 import com.seohyun.creator_settlement_pjt.entity.User;
 import com.seohyun.creator_settlement_pjt.exception.BusinessException;
 import com.seohyun.creator_settlement_pjt.exception.ErrorCode;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +53,7 @@ public class EnrollmentService {
             throw new BusinessException(ErrorCode.ALREADY_ENROLLED);
         }
 
-        FeeRecord feeRecord = feeRecordRepository.findActiveFeeRate(LocalDateTime.now())
+        FeeRecord feeRecord = feeRecordRepository.findActiveFeeRate(enrollmentRequestDTO.getPaidAt())
                 .orElseThrow(() -> new BusinessException(ErrorCode.FEE_RATE_NOT_FOUND));
 
         SaleRecord saleRecord = saleRecordRepository.save(SaleRecord.builder()
@@ -87,10 +86,14 @@ public class EnrollmentService {
             throw new BusinessException(ErrorCode.CANCEL_AMOUNT_EXCEEDED);
         }
 
+        FeeRecord feeAtCancel = feeRecordRepository.findActiveFeeRate(cancelRequestDTO.getCanceledAt())
+                .orElseThrow(() -> new BusinessException(ErrorCode.FEE_RATE_NOT_FOUND));
+
         CancelRecord cancelRecord = cancelRecordRepository.save(CancelRecord.builder()
                 .saleRecord(saleRecord)
                 .cancelAmount(cancelRequestDTO.getCancelAmount())
                 .canceledAt(cancelRequestDTO.getCanceledAt())
+                .feeRate(feeAtCancel.getFeeRate())
                 .build());
 
         return CancelResponseDTO.builder()
@@ -101,6 +104,7 @@ public class EnrollmentService {
                 .paidAmount(saleRecord.getPaidAmount())     // 샘플 데이터에 따른 변경  
                 .cancelAmount(cancelRecord.getCancelAmount())     // 샘플 데이터에 따른 변경
                 .canceledAt(cancelRecord.getCanceledAt())
+                .feeRateAtCancel(cancelRecord.getFeeRate())
                 .build();
     }
 }

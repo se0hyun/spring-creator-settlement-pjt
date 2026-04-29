@@ -17,6 +17,7 @@ public enum ErrorCode {
     INVALID_SALE_RECORD_ROLE(400, HttpStatus.BAD_REQUEST, "크리에이터만 판매 내역을 조회할 수 있습니다."),
     INVALID_DATE_RANGE(400, HttpStatus.BAD_REQUEST, "날짜 범위가 유효하지 않습니다."),
     INVALID_YEAR_MONTH_VALUE(400, HttpStatus.BAD_REQUEST, "연월 값이 유효하지 않습니다."),
+    INVALID_FEE_EFFECTIVE_FROM(400, HttpStatus.BAD_REQUEST, "수수료 적용 시작 시각이 유효하지 않습니다."),
 
     // 404 NOT FOUND
     COURSE_NOT_FOUND(404, HttpStatus.NOT_FOUND, "존재하지 않는 강의입니다."),
@@ -28,6 +29,7 @@ public enum ErrorCode {
     ALREADY_ENROLLED(409, HttpStatus.CONFLICT, "이미 수강 중인 강의입니다."),
     ALREADY_CANCELLED(409, HttpStatus.CONFLICT, "이미 취소된 판매 내역입니다."),
     SETTLEMENT_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "해당 월의 정산이 이미 존재합니다."),
+    FEE_RATE_SCHEDULE_CONFLICT(409, HttpStatus.CONFLICT, "동일한 적용 시작 시각의 수수료 구간이 이미 존재합니다."),
 
     // 404 NOT FOUND (settlement)
     SETTLEMENT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "존재하지 않는 정산입니다."),
