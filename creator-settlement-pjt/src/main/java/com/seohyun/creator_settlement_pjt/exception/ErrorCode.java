@@ -10,10 +10,12 @@ public enum ErrorCode {
 
     // 400 BAD REQUEST
     INVALID_REQUEST(400, HttpStatus.BAD_REQUEST, "유효하지 않은 요청입니다."),
-    INVALID_ROLE(400, HttpStatus.BAD_REQUEST, "수강생만 강의를 구매할 수 있습니다."),
+    INVALID_ENROLL_ROLE(400, HttpStatus.BAD_REQUEST, "수강생만 강의를 구매할 수 있습니다."),
     INVALID_PAYMENT_AMOUNT(400, HttpStatus.BAD_REQUEST, "결제 금액이 강의 정가와 일치하지 않습니다."),
     CANCEL_AMOUNT_EXCEEDED(400, HttpStatus.BAD_REQUEST, "환불 금액이 원 결제 금액을 초과할 수 없습니다."),
     INVALID_SETTLEMENT_STATUS(400, HttpStatus.BAD_REQUEST, "유효하지 않은 정산 상태입니다."),
+    INVALID_SALE_RECORD_ROLE(400, HttpStatus.BAD_REQUEST, "크리에이터만 판매 내역을 조회할 수 있습니다."),
+    INVALID_DATE_RANGE(400, HttpStatus.BAD_REQUEST, "날짜 범위가 유효하지 않습니다."),
 
     // 404 NOT FOUND
     COURSE_NOT_FOUND(404, HttpStatus.NOT_FOUND, "존재하지 않는 강의입니다."),

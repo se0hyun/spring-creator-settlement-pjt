@@ -36,7 +36,7 @@ public class SaleRecord {
     private User student;
 
     @Column(name="paid_amount", nullable = false)
-    private int paidAmount;
+    private long paidAmount;
 
     @Column(name="paid_at", nullable = false)
     private LocalDateTime paidAt;
@@ -48,7 +48,7 @@ public class SaleRecord {
     private CancelRecord cancelRecord;
 
     @Builder
-    private SaleRecord(Course course, User student, int paidAmount, 
+    private SaleRecord(Course course, User student, long paidAmount, 
                         LocalDateTime paidAt, BigDecimal feeRate) {
         this.course = course;
         this.student = student;

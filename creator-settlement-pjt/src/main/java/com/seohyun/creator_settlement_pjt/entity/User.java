@@ -11,15 +11,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @Entity
 @Table(name="users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)   // JPA용
-@AllArgsConstructor(access = AccessLevel.PRIVATE)    // Builder 전용, 직접 호출 차단
-@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +28,10 @@ public class User {
     @Column(name="role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Builder
+    private User(String name, Role role) {
+        this.name = name;
+        this.role = role;
+    }
 }

@@ -43,7 +43,11 @@ public class EnrollmentService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if (student.getRole() != Role.STUDENT) {
-            throw new BusinessException(ErrorCode.INVALID_ROLE);
+            throw new BusinessException(ErrorCode.INVALID_ENROLL_ROLE);
+        }
+
+        if (enrollmentRequestDTO.getPaidAmount() != course.getPrice()) {
+            throw new BusinessException(ErrorCode.INVALID_PAYMENT_AMOUNT);
         }
 
         if (enrollmentRequestDTO.getPaidAmount() != course.getPrice()) {
