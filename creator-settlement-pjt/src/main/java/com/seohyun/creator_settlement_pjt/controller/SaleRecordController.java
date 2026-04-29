@@ -20,15 +20,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/sale-records")
 @RequiredArgsConstructor
-@Tag(name = "SaleRecord", description = "판매 내역 조회 API")
+@Tag(name = "3. SaleRecord", description = "판매 내역 조회 API")
 public class SaleRecordController {
 
     private final SaleRecordService saleRecordService;
 
     @GetMapping
     @Operation(
-            summary = "판매 내역 목록 조회 (크리에이터별)",
-            description = "크리에이터의 판매 내역을 결제일 최신순으로 조회합니다. from/to를 모두 입력하면 기간 필터가 적용됩니다."
+            summary = "1. 판매 내역 목록 조회 (관리자)",
+            description = "크리에이터 별 판매 내역을 결제일 최신순으로 조회합니다. from/to를 모두 입력하면 기간 필터가 적용됩니다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
