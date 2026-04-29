@@ -17,15 +17,17 @@ import com.seohyun.creator_settlement_pjt.dto.CancelResponseDTO;
 import com.seohyun.creator_settlement_pjt.dto.EnrollmentRequestDTO;
 import com.seohyun.creator_settlement_pjt.dto.EnrollmentResponseDTO;
 import com.seohyun.creator_settlement_pjt.service.EnrollmentService;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Enrollment", description = "수강 및 취소 API")
+@RequestMapping("/enrollments")
+@Tag(name = "Enrollment", description = "(수강생) 수강 및 취소 API")
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
 
-    @PostMapping("/enrollments")
+    @PostMapping
     @Operation(summary = "강의 수강", description = "학생이 강의를 구매합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "수강 성공"),
@@ -36,7 +38,7 @@ public class EnrollmentController {
                 .body(enrollmentService.enroll(enrollmentRequestDTO));
     }
 
-    @PostMapping("/sale-records/{saleRecordId}/cancel")
+    @PostMapping("/{saleRecordId}/cancel")
     @Operation(summary = "수강 취소", description = "판매 내역을 취소하고 환불 처리합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "취소 성공"),
