@@ -72,13 +72,13 @@ cd spring-creator-settlement-pjt/creator-settlement-pjt
 - 기간 집계 시 직전 달 `Settlement`가 없으면 carryOver 초기값 반영이 불완전할 수 있음.
 - 생성된 월 정산의 수정·재생성 불가, 취소 1회·재수강 제약 등.
 
-전체 목록은 [docs/limitations-and-ai.md](docs/limitations-and-ai.md)의 「미구현 / 제약사항」 참고.
+전체 목록은 [docs/limitations.md](docs/limitations.md)의 「미구현 / 제약사항」 참고.
 
 ---
 
 ## AI 활용 범위
 
-표 형태의 세부 내용은 [docs/limitations-and-ai.md](docs/limitations-and-ai.md)의 「AI 활용 범위」 참고.
+표 형태의 세부 내용은 [docs/ai.md](docs/ai.md)의 「AI 활용 범위」 참고.
 
 ---
 
