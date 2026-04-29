@@ -75,11 +75,14 @@ public class Settlement {
     @Column
     private LocalDateTime paidAt;
 
+    @Column(nullable = false)
+    private long carryOverAmount;   // 이월 금액 (정산 금액이 음수인 경우, 다음 달 정산에서 차감)
+
     @Builder
     private Settlement(User creator, int year, int month,   
                         long totalSales, long totalRefunds, long netSales,
                         long feeAmount, long settlementAmount,
-                        int salesCount, int cancelCount) {
+                        int salesCount, int cancelCount, long carryOverAmount) {
         this.creator = creator;
         this.year = year;
         this.month = month;
@@ -92,6 +95,7 @@ public class Settlement {
         this.cancelCount = cancelCount;
         this.status = SettlementStatus.PENDING;
         this.createdAt = LocalDateTime.now();
+        this.carryOverAmount = carryOverAmount;
     }
 
     public void confirm() {
