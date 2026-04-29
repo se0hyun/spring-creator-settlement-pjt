@@ -38,4 +38,15 @@ public class FeeRecord {
         this.startAt = startAt;
         this.endAt = endAt;
     }
+
+    /**
+     * 새 수수료 구간이 {@code effectiveFromInclusive}부터 시작할 때, 기존 구간의 종료 시각을 그 직전 순간으로 맞춘다.
+     */
+    public void truncateEndBeforeNextPeriodStarts(LocalDateTime effectiveFromInclusive) {
+        LocalDateTime boundary = effectiveFromInclusive.minusNanos(1);
+        if (boundary.isBefore(this.startAt)) {
+            throw new IllegalArgumentException("effectiveFrom이 기존 구간 시작보다 앞입니다.");
+        }
+        this.endAt = boundary;
+    }
 }

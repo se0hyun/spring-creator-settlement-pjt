@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface FeeRecordRepository extends JpaRepository<FeeRecord, Long> {
 
-    @Query("SELECT f FROM FeeRecord f WHERE f.startAt <= :now AND f.endAt >= :now ORDER BY id DESC LIMIT 1")
+    @Query("SELECT f FROM FeeRecord f WHERE f.startAt <= :now AND f.endAt >= :now ORDER BY f.id DESC LIMIT 1")
     Optional<FeeRecord> findActiveFeeRate(@Param("now") LocalDateTime now); // 현재 유효한 수수료 레코드 조회
+
+    boolean existsByStartAt(LocalDateTime startAt);
 }
