@@ -94,6 +94,13 @@ cd spring-creator-settlement-pjt/creator-settlement-pjt
 | POST | `/api/v1/enrollments` | 강의 수강 등록 | STUDENT |
 | POST | `/api/v1/enrollments/{saleRecordId}/cancel` | 수강 취소 및 환불 | STUDENT |
 
+### FeeRate (플랫폼 수수료)
+
+| Method | URL | 설명 | 역할 |
+|--------|-----|------|------|
+| GET | `/api/v1/fee-rates/current` | 현재 유효 수수료 조회 | MANAGER |
+| POST | `/api/v1/fee-rates` | 새 수수료 구간 등록 | MANAGER |
+
 ### SaleRecord (판매 내역)
 
 | Method | URL | 설명 | 역할 |

@@ -95,7 +95,8 @@ public class DataInitializer implements ApplicationRunner {
         em.persist(sale3);
         em.persist(CancelRecord.builder()
                 .saleRecord(sale3).cancelAmount(80000)
-                .canceledAt(LocalDateTime.of(2025, 3, 25, 11, 0, 0)).build());
+                .canceledAt(LocalDateTime.of(2025, 3, 25, 11, 0, 0))
+                .feeRate(feeRate).build());
 
         // 케이스 4 — 김강사 3월 판매 → 익월 부분 환불
         // 3월 매출: +80,000 / 4월 환불: -40,000
@@ -105,7 +106,8 @@ public class DataInitializer implements ApplicationRunner {
         em.persist(sale4);
         em.persist(CancelRecord.builder()
                 .saleRecord(sale4).cancelAmount(40000)
-                .canceledAt(LocalDateTime.of(2025, 4, 5, 9, 0, 0)).build());
+                .canceledAt(LocalDateTime.of(2025, 4, 5, 9, 0, 0))
+                .feeRate(feeRate).build());
 
         // 케이스 5 — 이강사 월 경계: 1월 말 판매 → 2월 초 전액 취소
         // 1월 매출: +60,000 / 2월 환불: -60,000
@@ -116,7 +118,8 @@ public class DataInitializer implements ApplicationRunner {
         em.persist(sale5);
         em.persist(CancelRecord.builder()
                 .saleRecord(sale5).cancelAmount(60000)
-                .canceledAt(LocalDateTime.of(2025, 2, 3, 10, 0, 0)).build());
+                .canceledAt(LocalDateTime.of(2025, 2, 3, 10, 0, 0))
+                .feeRate(feeRate).build());
 
         // 케이스 6 — 이강사 3월 정상 판매 (취소 없음)
         // 3월 매출 기여: +60,000
@@ -150,14 +153,16 @@ public class DataInitializer implements ApplicationRunner {
         em.persist(sale9);
         em.persist(CancelRecord.builder()
                 .saleRecord(sale9).cancelAmount(60000)
-                .canceledAt(LocalDateTime.of(2025, 3, 28, 9, 0, 0)).build());
+                .canceledAt(LocalDateTime.of(2025, 3, 28, 9, 0, 0))
+                .feeRate(feeRate).build());
 
         // 추가-3 — 이강사 음수 netSales 시나리오 (carryOver 발생)
         // 4월 판매: 없음 / 4월 취소: sale6(3월 판매) 취소 60,000
         // 4월 net = -60,000 → feeAmount=0, settlement=0, 5월로 -60,000 이월
         em.persist(CancelRecord.builder()
                 .saleRecord(sale6).cancelAmount(60000)
-                .canceledAt(LocalDateTime.of(2025, 4, 10, 11, 0, 0)).build());
+                .canceledAt(LocalDateTime.of(2025, 4, 10, 11, 0, 0))
+                .feeRate(feeRate).build());
 
         // 추가-4 — 이강사 5월 판매 2건 (carryOver 흡수 후 잔여 정산 검증)
         // 5월 매출: 120,000 / effectiveNet = 120,000 - 60,000(carryOver) = 60,000
@@ -184,6 +189,7 @@ public class DataInitializer implements ApplicationRunner {
         // 5월 net = -60,000 → settlement=0, 6월로 -60,000 이월
         em.persist(CancelRecord.builder()
                 .saleRecord(sale12).cancelAmount(60000)
-                .canceledAt(LocalDateTime.of(2025, 5, 2, 9, 0, 0)).build());
+                .canceledAt(LocalDateTime.of(2025, 5, 2, 9, 0, 0))
+                .feeRate(feeRate).build());
     }
 }

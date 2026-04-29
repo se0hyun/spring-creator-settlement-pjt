@@ -150,7 +150,20 @@
 
 ---
 
-## 13. 추천 실행 순서 (한 번에 다 안 돌려도 될 때)
+## 13. 플랫폼 수수료 구간 변경 (`/fee-rates`)
+
+| ID | 시나리오 | 목적 | 확인 방법 |
+|----|----------|------|-----------|
+| F-01 | 현재 수수료 조회 | 운영 확인·기준값 | `GET /fee-rates/current` → **200**, `feeRate`·기간 필드 |
+| F-02 | 새 구간 등록 | 변경 기능 자체 | `POST /fee-rates` body `feeRate`, `effectiveFrom` → **201**, 직전 구간 `end`가 줄었는지 H2에서 확인 |
+| F-03 | 동일 `effectiveFrom` 재등록 | 중복 방지 | 같은 시각 두 번 → **409**, `FEE_RATE_SCHEDULE_CONFLICT` |
+| F-04 | 구매 스냅샷 | **paidAt** 시점 유효 수수료 | 변경 전/후로 `paidAt`을 달리 해 구매 시 `SaleRecord`·`sale-records` 응답 `feeRateAtSale` 확인 |
+| F-05 | 취소 스냅샷 | **canceledAt** 시점 유효 수수료 | 취소 후 응답 `feeRateAtCancel`·판매 목록 `feeRateAtCancel` |
+| F-06 | 월 정산에 반영 | 수수료 변경 후 해당 월 generate | 해당 월 `generate` 시 월 시작 시점 유효 `FeeRecord` 비율로 fee 계산되는지 |
+
+---
+
+## 14. 추천 실행 순서 (한 번에 다 안 돌려도 될 때)
 
 1. **E-01 → E-06** (구매·취소 최소 성공)  
 2. **E-02, E-05, E-07, E-08** (대표 에러 코드)  
@@ -159,4 +172,5 @@
 5. **C-01 표 순서대로 generate → M-01** (carryOver)  
 6. **S-01 → S-03 → S-04** (summary)  
 7. **B-01 ~ B-04** (월 경계 샘플 데이터와 교차 검증)  
+8. **F-01 → F-02 → F-04 ~ F-06** (수수료 구간 변경·스냅샷·정산 반영)
 
