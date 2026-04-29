@@ -52,11 +52,15 @@ public class SettlementService {
 
     @Transactional
     public void generateSettlement(int year, int month) {
+        if (year > LocalDateTime.now().getYear() || month > 12 || month < 1) {       // 날짜 유효성 검증    ex) 2099년 13월
+            throw new BusinessException(ErrorCode.INVALID_YEAR_MONTH_VALUE);
+        }
+
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime end = yearMonth.atEndOfMonth().atTime(23, 59, 59);
 
-        FeeRecord feeRecord = feeRecordRepository.findActiveFeeRate(LocalDateTime.now())
+        FeeRecord feeRecord = feeRecordRepository.findActiveFeeRate(start)
                 .orElseThrow(() -> new BusinessException(ErrorCode.FEE_RATE_NOT_FOUND));
 
         List<User> creators = userRepository.findAllByRole(Role.CREATOR);
