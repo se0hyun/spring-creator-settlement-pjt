@@ -79,13 +79,18 @@ public class SettlementService {
             long totalSales = sales.stream().mapToLong(SaleRecord::getPaidAmount).sum();
             long totalRefunds = cancels.stream().mapToLong(CancelRecord::getCancelAmount).sum();
             long netSales = totalSales - totalRefunds;
-
-            long feeAmount = BigDecimal.valueOf(netSales)
+            long feeAmount = 0;
+            long settlementAmount = 0;
+            if (netSales <= 0) {    // netSales < 0인 경우 feeAmount = 0, settlementAmount = 0 처리
+                continue;
+            } else{
+                feeAmount = BigDecimal.valueOf(netSales)
                     .multiply(feeRecord.getFeeRate())
                     .divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN)
                     .longValue();
-            long settlementAmount = netSales - feeAmount;
+                settlementAmount = netSales - feeAmount;
 
+            }
             settlementRepository.save(Settlement.builder()
                     .creator(creator)
                     .year(year)
