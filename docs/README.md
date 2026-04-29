@@ -9,5 +9,5 @@
 | [limitations-and-ai.md](limitations-and-ai.md) | 미구현·제약, AI 활용 |
 | [data-model.md](data-model.md) | 데이터 모델 |
 | [api-reference.md](api-reference.md) | API, Swagger, 에러 코드 |
-| [testing-guide.md](testing-guide.md) | 테스트 가이드 |
+| [testing-guide.md](testing-guide.md) | 수동 테스트 시나리오·목적·실행 순서 |
 | [git-workflow.md](git-workflow.md) | 커밋·브랜치 |
