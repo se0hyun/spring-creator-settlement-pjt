@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -52,13 +53,15 @@ public class SettlementService {
 
     @Transactional
     public void generateSettlement(int year, int month) {
-        if (year > LocalDateTime.now().getYear() || month > 12 || month < 1) {       // 날짜 유효성 검증    ex) 2099년 13월
+        // if (year > LocalDateTime.now().getYear() || month > 12 || month < 1) { 
+        if (YearMonth.of(year, month).isAfter(YearMonth.now()) || month > 12 || month < 1)   {   // 월 단위 비교로 날짜 비교 개선 -> 미래 월 정산 방지
             throw new BusinessException(ErrorCode.INVALID_YEAR_MONTH_VALUE);
         }
 
+
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
-        LocalDateTime end = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+        LocalDateTime end = yearMonth.atEndOfMonth().atTime(LocalTime.MAX);
 
         FeeRecord feeRecord = feeRecordRepository.findActiveFeeRate(start)
                 .orElseThrow(() -> new BusinessException(ErrorCode.FEE_RATE_NOT_FOUND));
@@ -187,9 +190,14 @@ public class SettlementService {
         long totalSales = 0, totalRefunds = 0, totalFee = 0, totalSettlement = 0;
         int salesCount = 0, cancelCount = 0;
 
+        YearMonth monthBeforeFrom = YearMonth.from(from).minusMonths(1);
+
         // 월 루프 간 미정산 손실을 연속으로 이월하기 위한 누적 변수
         // effectiveNet이 음수였던 달은 그 값을 다음 달로 전달
-        long runningCarryOver = 0;
+        long runningCarryOver = settlementRepository
+                .findByCreatorAndYearAndMonth(creator, monthBeforeFrom.getYear(), monthBeforeFrom.getMonthValue())
+                .map(prev -> Math.min(0L, prev.getNetSales() + prev.getCarryOverAmount()))
+                .orElse(0L);
 
         for (YearMonth ym : months) {
             // 월 구간의 실제 시작/종료 (기간 경계 고려)
