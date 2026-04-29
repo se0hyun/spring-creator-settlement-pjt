@@ -221,7 +221,7 @@ PENDING → CONFIRMED → PAID
 ## 데이터 모델 설명
 
 ### 엔티티 관계
-[image]
+<img width="1443" height="795" alt="스크린샷 2026-04-29 20 17 38" src="https://github.com/user-attachments/assets/1063056e-5ee6-4f88-a040-c8c8a0dda99e" />
 
 
 ### 주요 엔티티
