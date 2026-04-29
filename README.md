@@ -94,8 +94,9 @@ cd spring-creator-settlement-pjt/creator-settlement-pjt
 | POST | `/api/v1/enrollments` | 강의 수강 등록 | STUDENT |
 | POST | `/api/v1/enrollments/{saleRecordId}/cancel` | 수강 취소 및 환불 | STUDENT |
 
-❗️ 부분 환불 기능 제공을 위해 수강 취소(환불)시 가격을 입력할 수 있게 열어뒀습니다. 
-실제 개발 시 saleRecord 테이블 및 환불 규정에 따라 가격이 정해지겠지만, 과제에서는 원활한 테스트를 위해 requestParam으로 입력할 수 있습니다.❗️ 
+***❗️ 부분 환불 기능 제공을 위해 수강 취소(환불)시 가격을 입력할 수 있게 열어뒀습니다.***
+
+***실제 개발 시 saleRecord 테이블 및 환불 규정에 따라 가격이 정해지겠지만, 과제에서는 원활한 테스트를 위해 requestParam으로 입력할 수 있습니다.❗️***
 
 ### FeeRate (플랫폼 수수료)
 
