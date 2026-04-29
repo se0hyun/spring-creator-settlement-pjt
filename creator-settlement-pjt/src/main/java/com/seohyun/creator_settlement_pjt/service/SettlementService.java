@@ -52,11 +52,15 @@ public class SettlementService {
 
     @Transactional
     public void generateSettlement(int year, int month) {
+        if (year > LocalDateTime.now().getYear() || month > 12 || month < 1) {       // 날짜 유효성 검증    ex) 2099년 13월
+            throw new BusinessException(ErrorCode.INVALID_YEAR_MONTH_VALUE);
+        }
+
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime end = yearMonth.atEndOfMonth().atTime(23, 59, 59);
 
-        FeeRecord feeRecord = feeRecordRepository.findActiveFeeRate(LocalDateTime.now())
+        FeeRecord feeRecord = feeRecordRepository.findActiveFeeRate(start)
                 .orElseThrow(() -> new BusinessException(ErrorCode.FEE_RATE_NOT_FOUND));
 
         List<User> creators = userRepository.findAllByRole(Role.CREATOR);
@@ -79,13 +83,18 @@ public class SettlementService {
             long totalSales = sales.stream().mapToLong(SaleRecord::getPaidAmount).sum();
             long totalRefunds = cancels.stream().mapToLong(CancelRecord::getCancelAmount).sum();
             long netSales = totalSales - totalRefunds;
-
-            long feeAmount = BigDecimal.valueOf(netSales)
+            long feeAmount = 0;
+            long settlementAmount = 0;
+            if (netSales <= 0) {    // netSales < 0인 경우 feeAmount = 0, settlementAmount = 0 처리
+                continue;
+            } else{
+                feeAmount = BigDecimal.valueOf(netSales)
                     .multiply(feeRecord.getFeeRate())
                     .divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN)
                     .longValue();
-            long settlementAmount = netSales - feeAmount;
+                settlementAmount = netSales - feeAmount;
 
+            }
             settlementRepository.save(Settlement.builder()
                     .creator(creator)
                     .year(year)
