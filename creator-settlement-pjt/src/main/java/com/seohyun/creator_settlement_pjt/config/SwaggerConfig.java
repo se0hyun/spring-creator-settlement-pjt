@@ -24,6 +24,8 @@ public class SwaggerConfig {
                 .tags(List.of(
                         new Tag().name("Enrollment")
                                 .description("(수강생) 강의 구매·취소"),
+                        new Tag().name("FeeRate")
+                                .description("(관리자) 플랫폼 수수료 구간 등록·조회"),
                         new Tag().name("SaleRecord")
                                 .description("(크리에이터) 판매 내역 조회"),
                         new Tag().name("Settlement")
