@@ -175,12 +175,16 @@ PENDING → CONFIRMED → PAID
 기본적으로 엔티티 구조, 서비스 레이어 로직, DTO를 개발자가 설계한 뒤, 기본적인 코드를 작성했습니다.
 
 2. **버그 탐지**
-- H2 예약어 충돌 감지
-- 중복 조건 체크 발견
+- H2 예약어 충돌 감지 - YEAR / MONTH 컬럼명 오류 => settlement_year, settlement_month 등으로 명시적 컬럼명 지정.
+- 중복 조건 체크 발견 - INVALID_PAYMENT_AMOUNT 검증 중복 제거
+- 정산 월 검증 부정확 문제 발견 - `year > 올해` 비교만을 통해 해당 연도의 미래 월을 정산하는 오류 해결 `YearMonth.of(year, month).isAfter(YearMonth.now()) `
+- 기간 집계(summary)에서 carryOver(이월금) 시작값이 틀리던 문제 해결
 
 3. **코드 리뷰**
 - 생성자 패턴
 - 예외 처리 일관성 검토
+- 나노 단위 포함 시각 통해 월말 시각 경계 정교화
+- 정산 집계를 메모리 스트림 대신 DB SUM/COUNT 전환
 
 4. **Docs 작성**
 - README 초안 작성 및 내용 간략화
