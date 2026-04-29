@@ -1,5 +1,6 @@
 package com.seohyun.creator_settlement_pjt.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.seohyun.creator_settlement_pjt.entity.Settlement;
 import com.seohyun.creator_settlement_pjt.entity.SettlementStatus;
 import lombok.Builder;
@@ -8,6 +9,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@JsonPropertyOrder({
+        "id", "creatorId", "creatorName", "year", "month",
+        "totalSales", "totalRefunds", "netSales", "carryOverAmount",
+        "feeAmount", "settlementAmount", "salesCount", "cancelCount",
+        "status", "createdAt", "confirmedAt", "paidAt"
+})
 public class SettlementResponseDTO {
 
     private Long id;

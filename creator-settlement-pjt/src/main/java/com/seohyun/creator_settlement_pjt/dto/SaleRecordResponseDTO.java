@@ -1,5 +1,6 @@
 package com.seohyun.creator_settlement_pjt.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.seohyun.creator_settlement_pjt.entity.SaleRecord;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,6 +8,10 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@JsonPropertyOrder({
+        "id", "courseId", "courseTitle", "studentId", "studentName",
+        "paidAmount", "paidAt", "cancelled", "cancelAmount", "canceledAt"
+})
 public class SaleRecordResponseDTO {
 
     private Long id;

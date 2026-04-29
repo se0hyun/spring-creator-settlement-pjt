@@ -1,10 +1,17 @@
 package com.seohyun.creator_settlement_pjt.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
+@JsonPropertyOrder({
+        "creatorId", "creatorName",
+        "totalSales", "totalRefunds", "netSales",
+        "feeAmount", "settlementAmount",
+        "salesCount", "cancelCount"
+})
 public class SettlementSummaryItemDTO {
 
     private Long creatorId;
