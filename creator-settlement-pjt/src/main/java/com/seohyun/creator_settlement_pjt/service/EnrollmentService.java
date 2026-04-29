@@ -50,10 +50,6 @@ public class EnrollmentService {
             throw new BusinessException(ErrorCode.INVALID_PAYMENT_AMOUNT);
         }
 
-        if (enrollmentRequestDTO.getPaidAmount() != course.getPrice()) {
-            throw new BusinessException(ErrorCode.INVALID_PAYMENT_AMOUNT);
-        }
-
         if (saleRecordRepository.existsByStudentAndCourse(student, course)) {
             throw new BusinessException(ErrorCode.ALREADY_ENROLLED);
         }
