@@ -20,6 +20,7 @@ public class SettlementResponseDTO {
     private long netSales;
     private long feeAmount;
     private long settlementAmount;
+    private long carryOverAmount;
     private int salesCount;
     private int cancelCount;
     private SettlementStatus status;
@@ -39,6 +40,7 @@ public class SettlementResponseDTO {
                 .netSales(settlement.getNetSales())
                 .feeAmount(settlement.getFeeAmount())
                 .settlementAmount(settlement.getSettlementAmount())
+                .carryOverAmount(settlement.getCarryOverAmount())
                 .salesCount(settlement.getSalesCount())
                 .cancelCount(settlement.getCancelCount())
                 .status(settlement.getStatus())
